@@ -21,7 +21,7 @@
 <style>
   .slot {
     width: 100%;
-    aspect-ratio: 2/3;
+    aspect-ratio: 1/1.2;
     border-radius: var(--radius-md);
     background-color: var(--color-surface);
     border: 2px solid transparent;
@@ -31,6 +31,22 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    min-height: 60px;
+    padding: 8px;
+  }
+
+  @media (max-width: 768px) {
+    .slot {
+      min-height: 50px;
+      padding: 6px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .slot {
+      min-height: 45px;
+      padding: 4px;
+    }
   }
 
   .slot.available {
@@ -66,12 +82,37 @@
   }
 
   .slot-id {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 700;
     color: var(--color-text-muted);
+    line-height: 1;
+    text-align: center;
   }
 
   .selected .slot-id {
     color: var(--color-selected);
+  }
+
+  .icon {
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  @media (max-width: 768px) {
+    .slot-id {
+      font-size: 0.75rem;
+    }
+    .icon {
+      font-size: 0.9rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .slot-id {
+      font-size: 0.7rem;
+    }
+    .icon {
+      font-size: 0.8rem;
+    }
   }
 </style>
