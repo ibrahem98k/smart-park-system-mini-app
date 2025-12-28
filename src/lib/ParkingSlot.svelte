@@ -1,11 +1,19 @@
-<script>
-  let { id, status, isSelected, onClick } = $props();
+<script lang="ts">
+  interface Props {
+    id: string;
+    status: 'available' | 'occupied' | 'banned';
+    isSelected: boolean;
+    onClick: () => void;
+  }
 
-  // Status can be 'available', 'occupied', 'banned'
+  let { id, status, isSelected, onClick }: Props = $props();
+
+  // Memoized status class for better performance
+  const statusClass = $derived(`${status} ${isSelected ? 'selected' : ''}`);
 </script>
 
 <button 
-  class="slot {status} {isSelected ? 'selected' : ''}" 
+  class="slot {statusClass}" 
   onclick={onClick}
   disabled={status === 'occupied'}
   aria-label={`Parking Spot ${id} ${status}`}

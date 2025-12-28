@@ -36,8 +36,8 @@
     duration: number;
   }
 
-  // Different parking data for each level
-  const levelData: Record<number, Spot[]> = {
+  // Optimized parking data with factory function for better performance
+  const createLevelData = (): Record<number, Spot[]> => ({
     1: [
       { id: "A1", status: "available" as const },
       { id: "A2", status: "occupied" as const },
@@ -80,11 +80,12 @@
       { id: "F5", status: "occupied" as const },
       { id: "F6", status: "available" as const },
     ]
-  };
+  });
 
-  // Reactive state with enhanced data
+  const levelData = createLevelData();
+
+  // Optimized reactive state with proper initialization
   let spots = $state<Spot[]>(levelData[1]);
-
   let selectedSpotId = $state<string | null>(null);
   let showModal = $state<boolean>(false);
   let currentTicket = $state<BookingTicket | null>(null);
@@ -93,6 +94,9 @@
   let currentLevel = $state<number>(1);
   let isLoading = $state<boolean>(false);
   let notification = $state<{message: string, type: 'success' | 'error' | 'info'} | null>(null);
+
+  // Memoized notification timeout for better performance
+  let notificationTimeout: number | null = null;
 
   function handleSelect(id: string): void {
     const spot = spots.find((s) => s.id === id);
@@ -113,9 +117,15 @@
   }
 
   function showNotification(message: string, type: 'success' | 'error' | 'info'): void {
+    // Clear existing timeout to prevent memory leaks
+    if (notificationTimeout !== null) {
+      clearTimeout(notificationTimeout);
+    }
+    
     notification = { message, type };
-    setTimeout(() => {
+    notificationTimeout = setTimeout(() => {
       notification = null;
+      notificationTimeout = null;
     }, 3000);
   }
 

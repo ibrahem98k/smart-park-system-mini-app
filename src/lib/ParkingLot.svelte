@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
     import ParkingSlot from "./ParkingSlot.svelte";
 
     interface Spot {
@@ -7,25 +6,25 @@
         status: 'available' | 'occupied' | 'banned';
     }
 
-    export let spots: Spot[] = [];
-    export let selectedSpotId: string | null = null;
-    export let onSelect: (id: string) => void = () => {};
+    interface Props {
+        spots: Spot[];
+        selectedSpotId: string | null;
+        onSelect: (id: string) => void;
+    }
 
-    let isMounted = false;
-    
-    onMount(() => {
-        isMounted = true;
-        return () => {
-            isMounted = false;
-        };
-    });
+    let { spots, selectedSpotId, onSelect }: Props = $props();
+
+    // Memoized calculations for better performance
+    const firstRowSpots = $derived(spots.slice(0, 6));
+    const secondRowSpots = $derived(spots.slice(6, 12));
+    const availableCount = $derived(spots.filter(s => s.status === 'available').length);
 </script>
 
 <div class="parking-lot">
     <div class="parking-rows">
         <div class="row">
-            {#each spots.slice(0, 6) as spot, i}
-                <div class="slot-wrapper" style="--delay: {i * 0.05}s; animation-delay: {i * 0.05}s">
+            {#each firstRowSpots as spot, i}
+                <div class="slot-wrapper">
                     <ParkingSlot
                         id={spot.id}
                         status={spot.status}
@@ -46,8 +45,8 @@
         </div>
 
         <div class="row">
-            {#each spots.slice(6, 12) as spot, i}
-                <div class="slot-wrapper" style="--delay: ${(i + 6) * 0.05}s; animation-delay: ${(i + 6) * 0.05}s">
+            {#each secondRowSpots as spot, i}
+                <div class="slot-wrapper">
                     <ParkingSlot
                         id={spot.id}
                         status={spot.status}
@@ -63,7 +62,7 @@
         <div class="parking-lot-info">
             <div class="info-item">
                 <span class="info-label">Available</span>
-                <span class="info-value">{spots.filter(s => s.status === 'available').length}</span>
+                <span class="info-value">{availableCount}</span>
             </div>
             <div class="info-item">
                 <span class="info-label">Total</span>
